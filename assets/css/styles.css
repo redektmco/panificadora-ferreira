@@ -1,0 +1,62 @@
+/* Base — tokens provisorios: serao substituidos pelas cores reais da LP de origem. */
+:root {
+  --fonte-base: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --cor-texto: #2b2119;
+  --cor-fundo: #fffdf9;
+  --reveal-distancia: 24px;
+  --reveal-duracao: 620ms;
+  --reveal-easing: cubic-bezier(.22, .61, .36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--fonte-base);
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+  line-height: 1.6;
+}
+
+img, video { max-width: 100%; height: auto; }
+
+/* Imagens e iframes abaixo da dobra devem usar loading="lazy" + width/height
+   explicitos para evitar layout shift (CLS). */
+
+/* --- Motor de animacao de entrada ---------------------------------------
+   Elementos marcados com [data-reveal] comecam deslocados e transparentes;
+   main.js adiciona .is-visivel quando eles entram na viewport.
+   Sem JS, o :not() garante que o conteudo apareca normalmente.            */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-distancia));
+  transition:
+    opacity var(--reveal-duracao) var(--reveal-easing),
+    transform var(--reveal-duracao) var(--reveal-easing);
+  transition-delay: var(--reveal-atraso, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-visivel {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Variacoes de direcao */
+[data-reveal="esquerda"] { transform: translateX(calc(var(--reveal-distancia) * -1)); }
+[data-reveal="direita"]  { transform: translateX(var(--reveal-distancia)); }
+[data-reveal="zoom"]     { transform: scale(.94); }
+
+/* Respeita quem pediu menos movimento no sistema operacional. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] { opacity: 1; transform: none; }
+}
